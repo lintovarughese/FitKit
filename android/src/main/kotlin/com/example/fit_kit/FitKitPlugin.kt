@@ -6,6 +6,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataPoint
+import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.fitness.request.DataReadRequest
 import com.google.android.gms.fitness.result.DataReadResponse
@@ -123,8 +124,7 @@ class FitKitPlugin(private val registrar: Registrar) : MethodCallHandler {
         Log.d(TAG, "readSample: ${request.type}")
 
         val readRequest = DataReadRequest.Builder()
-                .read(request.dataType)
-                .bucketByTime(1, TimeUnit.DAYS)
+                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
                 .setTimeRange(request.dateFrom.time, request.dateTo.time, TimeUnit.MILLISECONDS)
                 .enableServerQueries()
                 .build()
