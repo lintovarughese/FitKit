@@ -122,11 +122,16 @@ class FitKitPlugin(private val registrar: Registrar) : MethodCallHandler {
 
     private fun readSample(request: ReadRequest, result: Result) {
         Log.d(TAG, "readSample: ${request.type}")
+//                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
 
         val readRequest = DataReadRequest.Builder()
+//                .read(request.dataType)
+//                .bucketByTime(1, TimeUnit.DAYS)
+//                .setTimeRange(request.dateFrom.time, request.dateTo.time, TimeUnit.MILLISECONDS)
+//                .enableServerQueries()
+//                .build()
                 .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
                 .setTimeRange(request.dateFrom.time, request.dateTo.time, TimeUnit.MILLISECONDS)
-                .enableServerQueries()
                 .build()
 
         Fitness.getHistoryClient(registrar.context(), GoogleSignIn.getLastSignedInAccount(registrar.context())!!)
