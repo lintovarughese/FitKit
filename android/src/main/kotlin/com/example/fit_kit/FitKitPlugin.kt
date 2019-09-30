@@ -122,17 +122,25 @@ class FitKitPlugin(private val registrar: Registrar) : MethodCallHandler {
 
     private fun readSample(request: ReadRequest, result: Result) {
         Log.d(TAG, "readSample: ${request.type}")
-//                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
 
-        val readRequest = DataReadRequest.Builder()
-//                .read(request.dataType)
-//                .bucketByTime(1, TimeUnit.DAYS)
-//                .setTimeRange(request.dateFrom.time, request.dateTo.time, TimeUnit.MILLISECONDS)
-//                .enableServerQueries()
-//                .build()
-                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
+        var readRequestBuilder: DataReadRequest.Builder = DataReadRequest.Builder()
+                .bucketByTime(1, TimeUnit.DAYS)
                 .setTimeRange(request.dateFrom.time, request.dateTo.time, TimeUnit.MILLISECONDS)
-                .build()
+                .enableServerQueries()
+
+        when (request.dataType) {
+            DataType.TYPE_STEP_COUNT_DELTA -> {
+                Log.d(TAG, "type running: ${DataType.TYPE_STEP_COUNT_DELTA.name}")
+                readRequestBuilder.aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
+            }
+            DataType.TYPE_CALORIES_EXPENDED -> readRequestBuilder.aggregate(DataType.TYPE_CALORIES_EXPENDED, DataType.AGGREGATE_CALORIES_EXPENDED)
+            DataType.TYPE_DISTANCE_DELTA -> readRequestBuilder.aggregate(DataType.TYPE_DISTANCE_DELTA, DataType.AGGREGATE_DISTANCE_DELTA)
+            else -> {
+                readRequestBuilder.read(request.dataType)
+            }
+        }
+
+        val readRequest = readRequestBuilder.build()
 
         Fitness.getHistoryClient(registrar.context(), GoogleSignIn.getLastSignedInAccount(registrar.context())!!)
                 .readData(readRequest)
